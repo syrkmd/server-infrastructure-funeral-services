@@ -1,0 +1,51 @@
+### Создание клиента
+POST http://localhost/api/clients
+Content-Type: application/json
+
+{
+  "fullName": "Иванов Иван Иванович",
+  "phone": "+7-900-111-22-33"
+}
+
+### Создание сотрудника
+POST http://localhost/api/employees
+Content-Type: application/json
+
+{
+  "fullName": "Петров Петр Петрович",
+  "position": "Организатор церемоний"
+}
+
+### Создание заявки
+POST http://localhost/api/orders
+Content-Type: application/json
+
+{
+  "serviceName": "Организация церемонии",
+  "ceremonyDate": "2026-06-10",
+  "status": "NEW",
+  "clientId": 1,
+  "employeeId": 1
+}
+
+### Создание расписания церемонии
+POST http://localhost/api/schedules
+Content-Type: application/json
+
+{
+  "ceremonyDate": "2026-06-10",
+  "ceremonyTime": "12:30:00",
+  "address": "г. Саратов, ул. Центральная, 10",
+  "employeeId": 1,
+  "funeralOrderId": 1
+}
+
+### Создание уведомления
+POST http://localhost/api/notifications
+Content-Type: application/json
+
+{
+  "message": "Церемония назначена на 10 июня 2026 года в 12:30",
+  "recipient": "+7-900-111-22-33",
+  "type": "CLIENT"
+}

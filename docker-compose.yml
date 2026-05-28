@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: course-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: funeral_services
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d funeral_services"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - funeral-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: funeral-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/funeral_services
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    networks:
+      - funeral-network
+
+  nginx:
+    image: nginx:latest
+    container_name: funeral-nginx
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - funeral-network
+
+volumes:
+  postgres_data:
+
+networks:
+  funeral-network:
+    driver: bridge
