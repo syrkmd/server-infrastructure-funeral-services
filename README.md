@@ -187,6 +187,7 @@ Playbook выполняет:
 - запуск `docker compose up --build -d`
 
 Важно: для Fedora 43 пакет `docker-compose-plugin` устанавливается из официального репозитория Docker, а не из стандартных репозиториев Fedora. После установки используется современная команда `docker compose`, без дефиса.
+Playbook рассчитан на чистую Fedora Server VM и не выполняет агрессивное удаление системных Docker/SELinux-пакетов через `dnf remove`.
 
 Запуск из корня проекта:
 

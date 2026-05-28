@@ -29,23 +29,6 @@
           - git
         state: present
 
-    # Удаляем возможные конфликтующие старые пакеты Docker.
-    # На чистой Fedora этих пакетов обычно нет, задача остается безопасной.
-    - name: Remove old Docker packages if present
-      ansible.builtin.dnf:
-        name:
-          - docker
-          - docker-client
-          - docker-client-latest
-          - docker-common
-          - docker-latest
-          - docker-latest-logrotate
-          - docker-logrotate
-          - docker-selinux
-          - docker-engine-selinux
-          - docker-engine
-        state: absent
-
     # Подключаем официальный Docker RPM repository для Fedora 43.
     - name: Add official Docker repository
       ansible.builtin.get_url:
