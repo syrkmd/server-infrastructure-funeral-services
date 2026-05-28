@@ -1,8 +1,16 @@
 ---
 # Playbook для автоматического развертывания инфраструктуры на Fedora Linux.
+# Для Fedora 43 Docker Compose устанавливается как официальный Docker CLI plugin
+# из Docker RPM repository. В стандартных репозиториях Fedora пакет
+# docker-compose-plugin может отсутствовать, поэтому сначала подключается
+# официальный репозиторий Docker.
 - name: Deploy funeral-services infrastructure
   hosts: localhost
   become: true
+
+  vars:
+    docker_repo_url: https://download.docker.com/linux/fedora/docker-ce.repo
+    docker_repo_file: /etc/yum.repos.d/docker-ce.repo
 
   tasks:
     # Обновляем все установленные пакеты через dnf.
@@ -11,14 +19,53 @@
         name: "*"
         state: latest
 
-    # Устанавливаем пакеты, необходимые для запуска проекта.
-    - name: Install Docker, Docker Compose plugin and git
+    # Устанавливаем базовые пакеты, необходимые для добавления репозитория Docker
+    # и получения исходного кода проекта.
+    - name: Install base packages
+      ansible.builtin.dnf:
+        name:
+          - ca-certificates
+          - dnf-plugins-core
+          - git
+        state: present
+
+    # Удаляем возможные конфликтующие старые пакеты Docker.
+    # На чистой Fedora этих пакетов обычно нет, задача остается безопасной.
+    - name: Remove old Docker packages if present
       ansible.builtin.dnf:
         name:
           - docker
+          - docker-client
+          - docker-client-latest
+          - docker-common
+          - docker-latest
+          - docker-latest-logrotate
+          - docker-logrotate
+          - docker-selinux
+          - docker-engine-selinux
+          - docker-engine
+        state: absent
+
+    # Подключаем официальный Docker RPM repository для Fedora 43.
+    - name: Add official Docker repository
+      ansible.builtin.get_url:
+        url: "{{ docker_repo_url }}"
+        dest: "{{ docker_repo_file }}"
+        mode: "0644"
+
+    # Устанавливаем актуальные пакеты Docker Engine и Docker Compose plugin.
+    # Команда Compose после установки используется в современном формате:
+    # docker compose, а не устаревший docker-compose.
+    - name: Install Docker Engine and Docker Compose plugin
+      ansible.builtin.dnf:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
           - docker-compose-plugin
-          - git
         state: present
+        update_cache: true
 
     # Запускаем Docker и добавляем его в автозагрузку.
     - name: Enable and start Docker service
@@ -26,6 +73,12 @@
         name: docker
         enabled: true
         state: started
+
+    # Проверяем, что Compose установлен как Docker CLI plugin.
+    - name: Check Docker Compose plugin
+      ansible.builtin.command:
+        cmd: docker compose version
+      changed_when: false
 
     # Запускаем контейнеры проекта через Docker Compose.
     - name: Build and start Docker Compose services

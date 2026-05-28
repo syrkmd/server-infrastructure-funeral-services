@@ -180,9 +180,13 @@ Ansible-конфигурация находится в папке `ansible` и �
 Playbook выполняет:
 
 - обновление пакетов через `dnf`
-- установку `docker`, `docker-compose-plugin`, `git`
+- подключение официального Docker RPM repository для Fedora 43
+- установку `docker-ce`, `docker-ce-cli`, `containerd.io`, `docker-buildx-plugin`, `docker-compose-plugin`, `git`
 - запуск и включение Docker service
+- проверку команды `docker compose version`
 - запуск `docker compose up --build -d`
+
+Важно: для Fedora 43 пакет `docker-compose-plugin` устанавливается из официального репозитория Docker, а не из стандартных репозиториев Fedora. После установки используется современная команда `docker compose`, без дефиса.
 
 Запуск из корня проекта:
 
