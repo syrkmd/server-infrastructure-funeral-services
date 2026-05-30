@@ -192,7 +192,7 @@ Playbook рассчитан на чистую Fedora Server VM и не выпо�
 Запуск из корня проекта:
 
 ```bash
-ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
+ansible-playbook -K -i ansible/inventory.ini ansible/playbook.yml
 ```
 
 ## Demo сценарий
