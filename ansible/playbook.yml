@@ -14,10 +14,10 @@
 
   tasks:
     # Обновляем все установленные пакеты через dnf.
-    - name: Update Fedora packages
-      ansible.builtin.dnf:
-        name: "*"
-        state: latest
+    # - name: Update Fedora packages
+    #   ansible.builtin.dnf:
+    #     name: "*"
+    #     state: latest
 
     # Устанавливаем базовые пакеты, необходимые для добавления репозитория Docker
     # и получения исходного кода проекта.
